@@ -1694,10 +1694,18 @@ EOD;
 
 		if (empty($mtus[$pid]))
 			$mtus[$pid] = $defaultmtu;
+		if ($type == "pppoe") {
+			if ($mtus[$pid] > (get_interface_mtu($port) - 8)) {
+				$mtus[$pid] = get_interface_mtu($port) - 8;
+			}
+		}
+		if (! ($type == "pppoe" && $mtus[$pid] > 1492) ) {
+			// N.B. MTU for PPPoE with MTU > 1492 is set using pppoe max-payload - see below
 			$mpdconf .= <<<EOD
 	set link mtu {$mtus[$pid]}
 
 EOD;
+		}
 
 		if (!empty($mrus[$pid]))
 			$mpdconf .= <<<EOD
@@ -1761,6 +1769,12 @@ EOD;
 			$provider = isset($ppp['provider']) ? $ppp['provider'] : "";
 			$mpdconf .= <<<EOD
 	set pppoe service "{$provider}"
+
+EOD;
+		}
+		if ($type == "pppoe" && $mtus[$pid] > 1492) {
+			$mpdconf .= <<<EOD
+	set pppoe max-payload {$mtus[$pid]}
 
 EOD;
 		}

@@ -61,52 +61,52 @@ if ($_POST) {
 	unset($input_errors);
 	$pconfig = $_POST;
 	
-	if (!in_array($pconfig['ipsec_dmn'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_dmn'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Daemon debug.";
 	}
-	if (!in_array($pconfig['ipsec_mgr'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_mgr'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for SA Manager debug.";
 	}
-	if (!in_array($pconfig['ipsec_ike'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_ike'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for IKE SA debug.";
 	}
-	if (!in_array($pconfig['ipsec_chd'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_chd'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for IKE Child SA debug.";
 	}
-	if (!in_array($pconfig['ipsec_job'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_job'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Job Processing debug.";
 	}
-	if (!in_array($pconfig['ipsec_cfg'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_cfg'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Configuration backend debug.";
 	}
-	if (!in_array($pconfig['ipsec_knl'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_knl'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Kernel Interface debug.";
 	}
-	if (!in_array($pconfig['ipsec_net'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_net'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Networking debug.";
 	}
-	if (!in_array($pconfig['ipsec_asn'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_asn'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for ASN Encoding debug.";
 	}
-	if (!in_array($pconfig['ipsec_enc'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_enc'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Message encoding debug.";
 	}
-	if (!in_array($pconfig['ipsec_imc'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_imc'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Integrity checker debug.";
 	}
-	if (!in_array($pconfig['ipsec_imv'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_imv'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Integrity Verifier debug.";
 	}
-	if (!in_array($pconfig['ipsec_pts'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_pts'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for Platform Trust Service debug.";
 	}
-	if (!in_array($pconfig['ipsec_tls'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_tls'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for TLS Handler debug.";
 	}
-	if (!in_array($pconfig['ipsec_esp'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_esp'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for IPsec Traffic debug.";
 	}
-	if (!in_array($pconfig['ipsec_lib'], array('0', '1', '2', '3', '4', '5'), true)) {
+	if (!in_array($pconfig['ipsec_lib'], array('1', '2', '3', '4', '5', '6'), true)) {
 		$input_errors[] = "A valid value must be specified for StrongSwan Lib debug.";
 	}
 	if (isset($pconfig['maxmss'])) {
@@ -283,9 +283,9 @@ function maxmss_checked(obj) {
 						<td colspan="2" valign="top" class="listtopic"><?=gettext("IPsec Advanced Settings"); ?></td>
 					</tr>
 					<tr>
-						<td width="22%" valign="top" class="vncell"><?=gettext("IPsec Debug"); ?></td>
+						<td width="22%" valign="top" class="vncell"><?=gettext("IPsec Logging Levels"); ?></td>
 						<td width="78%" class="vtable">
-							<strong><?=gettext("Start IPsec in debug mode based on sections selected"); ?></strong>
+							<strong><?=gettext("Use the following IPsec logging levels"); ?></strong>
 							<br />
 							<table summary="ipsec debug">
 						<?php foreach ($ipsec_loglevels as $lkey => $ldescr): ?>
@@ -294,8 +294,16 @@ function maxmss_checked(obj) {
 								<td width="78%" valign="top" class="vncell">
 								<?php	echo "<select name=\"ipsec_{$lkey}\" id=\"ipsec_{$lkey}\">\n";
 									foreach (array("Silent", "Audit", "Control", "Diag", "Raw", "Highest") as $lidx => $lvalue) {
-										echo "<option value=\"{$lidx}\" ";
-										 if ($pconfig["ipsec_{$lkey}"] == $lidx)
+										$logval = $lidx + 1;
+										if (isset($pconfig["ipsec_{$lkey}"])) {
+											if ($pconfig["ipsec_{$lkey}"] == $logval) {
+												$logselected = $logval;	
+											}
+										} else {
+											$logselected = "3";
+										}
+										echo "<option value=\"{$logval}\" ";
+										 if ($logselected == $logval)
 											echo "selected=\"selected\"";
 										echo ">{$lvalue}</option>\n";
 									}
@@ -306,8 +314,7 @@ function maxmss_checked(obj) {
 						<?php endforeach; ?>
 							<tr style="display:none;"><td></td></tr>
 							</table>
-							<br /><?=gettext("Launches IPsec in debug mode so that more verbose logs " .
-							"will be generated to aid in troubleshooting."); ?>
+							<br /><?=gettext("Defines IPsec logging levels. Control is the default level for all log types."); ?>
 						</td>
 					</tr>
 					<tr>

@@ -1488,6 +1488,69 @@ function interface_ppps_configure($interface) {
 				pfSense_ngctl_attach(".", $port);
 				/* Enable setautosrc to automatically change mac address if parent interface's changes */
 				mwexec("ngctl msg {$port}: setautosrc 1");
+
+				/* Log interfaces and MAC addressses */
+				$log_ports[0] = $port;
+				$log_ports_index = 1;
+
+				while (true) {
+					$parent_port = get_parent_interface($port)[0];
+					if ($parent_port == $log_ports[($log_ports_index - 1)]) {
+						break;
+					}
+					$log_ports[$log_ports_index++] = $parent_port;
+				}
+				unset($parent_port, $log_ports_index);
+
+				$log_output = "interface_ppps_configure() -";
+
+				foreach ($log_ports as $log_key => $log_port) {
+					if ($log_key > 0) {
+						$log_output .= ",";
+					}
+
+					$log_output .= " port[" . $log_key . "]:" . $log_port;
+
+					exec("/sbin/ifconfig " . escapeshellarg($log_port) . " link", $exec_output);
+					foreach ($exec_output as $exec_output_line) {
+						if (preg_match('{ \A \s+ ether \s+ (\S+) .* \Z }xmsi', $exec_output_line, $matches)) {
+							$log_output .= " mac:" . $matches[1];
+						}
+					}
+					unset($exec_output, $exec_output_line, $matches);
+
+					$check_autosrc = false;
+					exec("/usr/sbin/ngctl msg " . escapeshellarg($log_port) . ": getenaddr", $exec_output);
+					foreach ($exec_output as $exec_output_line) {
+						if (preg_match('{ \A Args: \s+ (\S+) .* \Z }xmsi', $exec_output_line, $matches)) {
+							$log_output .= " enaddr:" . $matches[1];
+							$check_autosrc = true;
+						}
+					}
+					unset($exec_output, $exec_output_line, $matches);
+
+					if ($check_autosrc) {
+						exec("/usr/sbin/ngctl msg " . escapeshellarg($log_port) . ": getautosrc", $exec_output);
+						foreach ($exec_output as $exec_output_line) {
+							if (preg_match('{ \A Args: \s+ (\S+) .* \Z }xmsi', $exec_output_line, $matches)) {
+								if ($matches[1] == "1") {
+									$log_output .= " (autosrc)";
+								}
+							}
+						}
+					}
+					unset($exec_output, $exec_output_line, $matches, $check_autosrc);
+				}
+
+				exec("/sbin/sysctl net.inet6.ip6 | /usr/bin/grep tempaddr", $exec_output);
+				foreach ($exec_output as $exec_output_line) {
+					$log_output .= ", " . $exec_output_line;
+				}
+				unset($exec_output, $exec_output_line, $matches);
+
+				log_error($log_output);
+				unset($log_ports, $log_port, $log_key, $log_output);
+
 				break;
 			case "pptp":
 			case "l2tp":
@@ -1830,6 +1893,11 @@ EOD;
 	foreach($ports as $port) {
 		if(file_exists("{$g['var_path']}/spool/lock/LCK..{$port}"))
 			unlink("{$g['var_path']}/spool/lock/LCK..{$port}");
+	}
+
+	/* brief pause if system is booting to let everything stabilise */
+	if (platform_booting()) {
+		sleep(6);
 	}
 
 	/* fire up mpd */

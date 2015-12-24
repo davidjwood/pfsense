@@ -1998,6 +1998,19 @@ EOD;
 		}
 	}
 
+	/* Set temporary bogon (RFC 5737) IPv4 address to work round mpd5 IPv6CP issue causing */
+	/* random IPv6 interface identifier during boot. More details at */
+	/* https://forum.pfsense.org/index.php?topic=101967.msg570519#msg570519 */
+	/* N.B. The current work round only supports PPPoE */
+	$tempaddr = false;
+	if (platform_booting() && $type == "pppoe" && is_array($ports) && !empty($ports[0])) {
+		$tempaddr = true;
+		$tempaddr_iface = get_real_interface($ports[0]);
+		if (!empty($tempaddr_iface)) {
+			mwexec("/sbin/ifconfig " . escapeshellarg($tempaddr_iface) . " inet 192.0.2.248/31 alias", true);
+		}
+	}
+
 	/* fire up mpd */
 	mwexec("/usr/local/sbin/mpd5 -b -k -d {$g['varetc_path']} -f mpd_{$interface}.conf -p {$g['varrun_path']}/" .
 		escapeshellarg($ppp['type']) . "_{$interface}.pid -s ppp " . escapeshellarg($ppp['type']) . "client");
@@ -2019,6 +2032,13 @@ EOD;
 		}
 		$i++;
 	}
+
+	/* Remove work round temporary address */
+	if ($tempaddr && !empty($tempaddr_iface)) {
+		mwexec("/sbin/ifconfig " . escapeshellarg($tempaddr_iface) . " inet 192.0.2.248/31 -alias", true);
+		unset ($tempaddr_iface);
+	}
+	unset ($tempaddr);
 
 	/* we only support the 3gstats.php for huawei modems for now. Will add more later. */
 	/* We should be able to launch the right version for each modem */
